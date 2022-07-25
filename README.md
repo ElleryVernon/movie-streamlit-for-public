@@ -1,5 +1,5 @@
 # movie-streamlit-for-public
-- 바로가기 (https://elleryvernon-movie-streamlit-main-0w4ge5.streamlitapp.com/)<br>
+- 바로가기 (https://elleryvernon-movie-streamlit-main-0w4ge5.streamlitapp.com/)<br><br>
 자연어처리 모델(Klue/BERT)을 이용한 영화 댓글 긍정 부정 감성 분류 프로젝트
 
 config/config.py에 네이버 오픈 API Key, ID 발급 후 입력 필요함.
