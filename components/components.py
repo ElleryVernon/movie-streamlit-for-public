@@ -65,11 +65,11 @@ def summary_component(area, reviews, movie_info):
             col3.metric("평점", f"{rating}", "+ 긍정", delta_color="normal")
         col4.metric(
             "평가비율",
-            f"{round(len(reviews['positive']) / len(reviews['negative']) * 100)}%",
+            f"{round(len(reviews['positive']) / len(reviews['all']) * 100)}%",
             "+ 긍정",
         )
         col5.metric(
             "평가비율",
-            f"{round(len(reviews['positive']) / len(reviews['negative']) * 100)}%",
+            f"{round(len(reviews['negative']) / len(reviews['all']) * 100)}%",
             "- 부정",
         )
