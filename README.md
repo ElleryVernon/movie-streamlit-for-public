@@ -10,6 +10,7 @@
 
 모델 검증 결과:<br>
 - 정확도(Acurracy): 0.96<br>
+
 - 검증 정확도(Validation Acurracy): 0.93<br>
 
 ![steamlit-image](https://user-images.githubusercontent.com/83461987/180717741-18baffb8-5895-4719-891b-3c022ef5f387.png)
