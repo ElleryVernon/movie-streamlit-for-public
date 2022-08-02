@@ -51,7 +51,7 @@ def review_component(area, reviews, movie_info):
 def summary_component(area, reviews, movie_info):
     col3, col4, col5 = area.columns(3)
     rating = movie_info["rating"]
-    if not float(rating) or isinstance(reviews, str):
+    if not float(rating) or not isinstance(reviews, dict):
         col3.metric("평점", "0.00", "없음", delta_color="off")
         col4.metric("평가비율", "0%", "+ 긍정")
         col5.metric("평가비율", "0", "- 부정")
