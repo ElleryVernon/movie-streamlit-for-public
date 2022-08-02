@@ -9,6 +9,8 @@ from model.model_class import BertClassifier
 
 
 def prediction(reviews, model, tokenizer, MAX_LEN=41):
+    result = ""
+    
     if reviews:
         input_ids, attention_mask, _ = bert_tokenizer(reviews, MAX_LEN, tokenizer)
         with torch.no_grad():
@@ -20,8 +22,7 @@ def prediction(reviews, model, tokenizer, MAX_LEN=41):
             "positive": df[df["감정"] == "긍정"]["리뷰"],
             "negative": df[df["감정"] == "부정"]["리뷰"],
         }
-    else:
-        result = ""
+        
     return result
 
 
