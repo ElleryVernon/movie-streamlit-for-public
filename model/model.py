@@ -51,9 +51,9 @@ def bert_tokenizer(sentences, max_len, tokenizer):
             padding="max_length",
             return_attention_mask=True,
         )
-        input_ids += [encoded["input_ids"]]
-        attention_mask += [encoded["attention_mask"]]
-        token_type_ids += [encoded["token_type_ids"]]
+        input_ids.append(encoded["input_ids"])
+        attention_mask.append(encoded["attention_mask"])
+        token_type_ids.append(encoded["token_type_ids"])
 
     return (
         torch.tensor(input_ids),
