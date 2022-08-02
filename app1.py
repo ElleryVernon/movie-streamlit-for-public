@@ -39,7 +39,7 @@ def app():
     if not options:
         return placeholder.error("영화를 찾을 수 없습니다. 제목을 다시 확인해주세요.")
 
-    movie = select_area.selectbox("영화를 선택해주세요. 👇", get_movie_list(title, API_CONFIG))
+    movie = select_area.selectbox("영화를 선택해주세요. 👇", options)
 
     if "발견했어요!" in movie:
         return placeholder.success("영화를 선택하시는동안 기다리고 있어요.")
