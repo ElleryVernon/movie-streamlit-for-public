@@ -10,8 +10,7 @@ from components.components import (
 )
 
 from model.model import load_tokenizer, load_model, prediction
-from utils.movie import get_movie_info
-from utils.utils import make_year_arr
+from utils.movie import get_movie_info, get_movie_list
 
 
 def app():
@@ -21,7 +20,7 @@ def app():
 
     st.title("네이버 영화 리뷰 분석")
     title = st.text_input("정확한 영화 제목을 입력하고 Enter를 눌러주세요. (시리즈 물은 번호를 포함해주세요.)")
-    year = st.selectbox("개봉연도", make_year_arr(), index=0)
+    select_area = st.empty()
 
     st.write("""---""")
 
@@ -32,38 +31,35 @@ def app():
     rating_area = st.empty()
     tab_area = st.empty()
 
-    placeholder.success("입력을 기다리고 있어요... ")
+    if not title:
+        return placeholder.success("입력을 기다리고 있어요... ")
 
-    if title:
-        try:
-            placeholder.empty()
-            rating_area.empty()
-            movie_aria.empty()
-            tab_area.empty()
+    options = get_movie_list(title, API_CONFIG)
 
-            placeholder.info("영화 내용을 최대한 빨리 요약하는 중... ")
+    if not options:
+        return placeholder.error("영화를 찾을 수 없습니다. 제목을 다시 확인해주세요.")
 
-            if year == "전체":
-                movie_info = get_movie_info(title, API_CONFIG)
-            else:
-                movie_info = get_movie_info(title, API_CONFIG, year)
+    movie = select_area.selectbox("영화를 선택해주세요. 👇", get_movie_list(title, API_CONFIG))
 
-            placeholder.warning("열심히 리뷰를 읽고 분류 하는 중...")
+    if "발견했어요!" in movie:
+        return placeholder.success("영화를 선택하시는동안 기다리고 있어요.")
 
-            reviews = prediction(movie_info["reviews"], model, tokenizer)
+    placeholder.info("영화 내용을 최대한 빨리 요약하고 있어요... ")
+    title, year = movie.rstrip(")").split(" (")
+    movie_info = get_movie_info(title, API_CONFIG, year)
 
-            placeholder.success("완료!")
-            sleep(0.5)
-            placeholder.empty()
+    placeholder.warning("열심히 리뷰를 읽고 분류 하고 있어요...")
+    reviews = prediction(movie_info["reviews"], model, tokenizer)
 
-            col1, col2 = movie_aria.columns([0.8, 1.5])
-            with col1:
-                poster_component(movie_info["image"])
-            with col2:
-                movie_info_component(movie_info)
+    placeholder.success("완료!")
+    sleep(0.5)
+    placeholder.empty()
 
-            summary_component(rating_area, reviews, movie_info)
-            review_component(tab_area, reviews, movie_info)
+    col1, col2 = movie_aria.columns([0.8, 1.5])
+    with col1:
+        poster_component(movie_info["image"])
+    with col2:
+        movie_info_component(movie_info)
 
-        except Exception:
-            placeholder.error("영화를 찾을 수 없습니다. 제목 혹은 개봉연도를 다시 확인해주세요.")
+    summary_component(rating_area, reviews, movie_info)
+    review_component(tab_area, reviews, movie_info)

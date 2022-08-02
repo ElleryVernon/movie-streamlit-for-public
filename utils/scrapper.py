@@ -1,6 +1,7 @@
 import re
 import requests
 from bs4 import BeautifulSoup as bs
+from utils.status_code import STATUS
 
 
 class NaverReviewScrapper:
@@ -12,57 +13,55 @@ class NaverReviewScrapper:
 
     def get_page(self, url):
         response = requests.get(url, headers=self.headers)
-        if response.status_code == 200:
+        if response.status_code == STATUS["OK"]:
             return bs(response.content, "html.parser")
 
     def get_movie_code(self, title):
         url = f"{self.base_url}/search/result.naver?query={title}&section=all&ie=utf8"
         movies = self.get_page(url).find("p", class_="result_thumb").find("a")
+        code = None
+        if movies:
+            code = movies["href"].split("=")[1]
 
-        if not movies:
-            raise ValueError(f"잘못된 인자값입니다.({title})")
+        return code
 
-        return movies["href"].split("=")[1]
-
-    def get_reviews(self, code, with_rating, page=1):
+    def get_reviews(self, code, page=1):
+        # ratings = [article.find("em").text for article in articles]
         url = f"{self.base_url}/point/af/list.naver?st=mcode&sword={code}&target=after&page={page}"
         articles = self.get_page(url).find_all(class_="title")
         reviews = [article.text.split("\n")[5].strip() for article in articles]
-        ratings = [article.find("em").text for article in articles]
-        if not with_rating:
-            return list(set([review for review in reviews if review]))
-        if ratings:
-            return list(
-                set(
-                    [
-                        [rating, review]
-                        for rating, review in zip(ratings, reviews)
-                        if review
-                    ]
-                )
-            )
+        result = {
+            "comments": [review for review in reviews if review],
+            "size": len(reviews),
+        }
+        return result
 
-    def get_review_by_num(self, title, code="", with_rating=False, max_count=50):
-        reviews = []
+    def get_review_by_num(self, title, code="", max_count=50):
+        if not code:
+            code = self.get_movie_code(title)
+
+        result = []
         page_num = 1
-        prev_len = 0
-        while len(reviews) < max_count:
-            if not code:
-                reviews += self.get_reviews(
-                    self.get_movie_code(title), with_rating, page_num
-                )
-            else:
-                reviews += self.get_reviews(code, with_rating, page_num)
-            if prev_len == len(reviews):
-                return reviews
-            prev_len = len(reviews)
+        is_progress = True
+        while is_progress:
+            comments, size = self.get_reviews(code, page_num).values()
+            result += comments
+
+            if len(result) > max_count or size < 10:
+                result = result[:max_count]
+                is_progress = False
+
+            result = list(set(result))
             page_num += 1
 
-        return reviews[:max_count]
+        return result
 
     def get_story(self, code):
         url = f"{self.base_url}/bi/mi/basic.naver?code={code}"
         story_area = self.get_page(url).find("div", class_="story_area")
-        if not story_area:
-            return "줄거리가 존재하지 않습니다."
-        return re.sub("\r\xa0", " ", story_area.find("p", class_="con_tx").text)
+        story = "줄거리가 존재하지 않습니다."
+
+        if story_area:
+            story = re.sub("\r\xa0", " ", story_area.find("p", class_="con_tx").text)
+
+        return story
