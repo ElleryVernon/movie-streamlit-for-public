@@ -55,20 +55,20 @@ def summary_component(area, reviews, movie_info):
         col3.metric("평점", "0.00", "없음", delta_color="off")
         col4.metric("평가비율", "0%", "+ 긍정")
         col5.metric("평가비율", "0", "- 부정")
+        return
+    else if float(rating) < 6:
+        col3.metric("평점", f"{rating}", "- 부정", delta_color="normal")
+    elif float(rating) < 7.5:
+        col3.metric("평점", f"{rating}", "중립", delta_color="off")
     else:
-        if float(rating) < 6:
-            col3.metric("평점", f"{rating}", "- 부정", delta_color="normal")
-        elif float(rating) < 7.5:
-            col3.metric("평점", f"{rating}", "중립", delta_color="off")
-        else:
-            col3.metric("평점", f"{rating}", "+ 긍정", delta_color="normal")
-        col4.metric(
-            "평가비율",
-            f"{round(len(reviews['positive']) / len(reviews['all']) * 100)}%",
-            "+ 긍정",
-        )
-        col5.metric(
-            "평가비율",
-            f"{round(len(reviews['negative']) / len(reviews['all']) * 100)}%",
-            "- 부정",
-        )
+        col3.metric("평점", f"{rating}", "+ 긍정", delta_color="normal")
+    col4.metric(
+        "평가비율",
+        f"{round(len(reviews['positive']) / len(reviews['all']) * 100)}%",
+        "+ 긍정",
+    )
+    col5.metric(
+        "평가비율",
+        f"{round(len(reviews['negative']) / len(reviews['all']) * 100)}%",
+        "- 부정",
+    )
