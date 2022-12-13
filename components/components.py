@@ -56,7 +56,7 @@ def summary_component(area, reviews, movie_info):
         col4.metric("평가비율", "0%", "+ 긍정")
         col5.metric("평가비율", "0", "- 부정")
         return
-    else if float(rating) < 6:
+    elif float(rating) < 6:
         col3.metric("평점", f"{rating}", "- 부정", delta_color="normal")
     elif float(rating) < 7.5:
         col3.metric("평점", f"{rating}", "중립", delta_color="off")
